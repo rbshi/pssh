@@ -22,7 +22,7 @@ foreach boardsn [array get boardsns] {
 	set_property PROBES.FILE ${bitpath}.ltx [get_hw_devices ${devicename}]
 	set_property FULL_PROBES.FILE ${bitpath}.ltx [get_hw_devices ${devicename}]
 	program_hw_devices [get_hw_devices ${devicename}]
-	refresh_hw_device [lindex [get_hw_devices ${devicename}] 0]
+	# refresh_hw_device [lindex [get_hw_devices ${devicename}] 0]
 	close_hw_target ${serveraddr}:${serverport}/xilinx_tcf/Xilinx/${boardsn}
 	close_hw_manager	
 }
