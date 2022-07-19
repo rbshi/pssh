@@ -20,7 +20,7 @@ set_property PROGRAM.FILE ${bitpath}.bit [get_hw_devices ${devicename}]
 if { [file exists ${bitpath}.ltx] == 1} {
 	set_property PROBES.FILE ${bitpath}.ltx [get_hw_devices ${devicename}]
 	set_property FULL_PROBES.FILE ${bitpath}.ltx [get_hw_devices ${devicename}]
-	puts "ILA probes .ltx found."
+	puts "INFO: ILA probes .ltx found."
 }
 
 program_hw_devices [get_hw_devices ${devicename}]
