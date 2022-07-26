@@ -40,7 +40,7 @@ fi
 # generate host name list
 BOARDSN=(XFL1QOQ1ATTYA XFL1O5FZSJEIA XFL1QGKZZ0HVA XFL11JYUKD4IA XFL1EN2C02C0A XFL1NMVTYXR4A XFL1WI3AMW4IA XFL1ELZXN2EGA XFL1W5OWZCXXA XFL1H2WA3T53A)
 for servid in ${SERVID[@]}; do 
-	hostlist+="alveo-u55c-$(printf "%02d" $servid).ethz.ch "
+	hostlist+="alveo-u55c-$(printf "%02d" $servid) "
 done
 
 # STEP1: Program FPGA
@@ -55,7 +55,7 @@ if [ $PROGRAM_FPGA -eq 1 ]; then
 	echo "Programming FPGA..."
 	for servid in "${SERVID[@]}"; do
 		boardidx=$(expr $servid - 1)
-		alveo_program alveo-u55c-$(printf "%02d" $servid).ethz.ch 3121 ${BOARDSN[boardidx]} xcu280_u55c_0 $FPGA_BIT_PATH
+		alveo_program alveo-u55c-$(printf "%02d" $servid) 3121 ${BOARDSN[boardidx]} xcu280_u55c_0 $FPGA_BIT_PATH
 	done
 	read -p "FPGA programmed. Press enter to continue or Ctrl-C to exit."
 fi
