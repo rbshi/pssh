@@ -6,7 +6,7 @@ REMOTE_DIR=/local/home/runshi/Workspace/tm/
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 # server IDs (u55c)
-SERVID=(7 8 9 10)
+SERVID=(1 2)
 
 # if [ "$#" -ne 3 ]; then
 #   echo "Usage: $0 program_fpga<0/1> reboot_host<0/1> update_hostbin<0/1>" >&2
@@ -19,8 +19,8 @@ for servid in ${SERVID[@]}; do
 done
 
 # STEP1: activate servers (login with passwd to enable the nfs home mounting)
-echo "Activating server..."
-parallel-ssh -H "$hostlist" -A -O PreferredAuthentications=password "echo Login success!"
+# echo "Activating server..."
+# parallel-ssh -H "$hostlist" -A -O PreferredAuthentications=password "echo Login success!"
 
 # STEP2: rsync the workspace
 echo "Confirm the existance of remote dir..."
