@@ -1,13 +1,17 @@
 #!/bin/bash
 
-# server IDs (u55c)
-SERVID=(7)
+if [ "$#" -ne 2 ]; then
+  echo "Usage: $0 <abs remote path of bitstream> <serverid, e.g. '1 2 3 4'>" >&2
+  exit 1
+fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DRIVER_REMOTE_PATH=/mnt/scratch/runshi/coyote_drv.ko
 
 # args
 FPGA_BIT_PATH=$1
+# server IDs (u55c)
+SERVID=$2
 
 # generate host name list
 for servid in ${SERVID[@]}; do 
@@ -19,27 +23,21 @@ FPGAMAC1=(000A350B22DC 000A350B22EC 000A350B2344 000A350B24DC 000A350B23BC 000A3
 FPGAIP0=(0afd4a44 0afd4a48 0afd4a4c 0afd4a50 0afd4a54 0afd4a58 0afd4a5c 0afd4a60 0afd4a64 0afd4a68)
 FPGAIP1=(0afd4a45 0afd4a49 0afd4a4d 0afd4a51 0afd4a55 0afd4a59 0afd4a5d 0afd4a61 0afd4a65 0afd4a69)
 
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <abs remote path of bitstream>" >&2
-  exit 1
-fi
-
 # STEP1: Program FPGA
 # activate servers (login with passwd to enable the nfs home mounting)
-echo "Activating server..."
-pssh -H "$hostlist" -A -O PreferredAuthentications=password "echo Login success!"
+# echo "Activating server..."
+# pssh -H "$hostlist" -A -O PreferredAuthentications=password "echo Login success!"
 echo "Programming FPGA..."
 pssh -H "$hostlist" -x '-tt' "/mnt/scratch/runshi/tools/sguitl_vivado -b $FPGA_BIT_PATH"
 echo "Removing the driver if exist..."
-pssh -H "$hostlist" -x '-tt' "if lsmod | grep -wq coyote_drv; then sudo rmmod coyote_drv; fi"	
+pssh -H "$hostlist" -x '-tt' "if lsmod | grep -wq coyote_drv; then sudo rmmod coyote_drv; fi"
 echo "PCIe hot reseting..."
 pssh -H "$hostlist" -x '-tt' "/opt/cli/sgutil program rescan"
-read -p "FPGA programmed. Press enter to continue PCIe hot reset and driver loading or Ctrl-C to exit."
 
 # STEP2: Hot reset
 # put -x '-tt' (pseudo terminal) here for sudo command
 echo "Loading driver..."
-for servid in "${SERVID[@]}"; do
+for servid in ${SERVID[@]}; do
 	boardidx=$(expr $servid - 1)
 	pssh -H "alveo-u55c-$(printf "%02d" $servid)" -x '-tt' "sudo insmod $DRIVER_REMOTE_PATH ip_addr_q0=${FPGAIP0[boardidx]} ip_addr_q1=${FPGAIP1[boardidx]} mac_addr_q0=${FPGAMAC0[boardidx]} mac_addr_q1=${FPGAMAC1[boardidx]}"
 done
